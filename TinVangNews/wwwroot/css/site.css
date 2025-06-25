@@ -1,0 +1,112 @@
+/* General Body & HTML Styling */
+html {
+    font-size: 14px;
+}
+
+@media (min-width: 768px) {
+    html {
+        font-size: 16px;
+    }
+}
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+
+body {
+    background-color: #f8f9fa; /* Light grey background */
+    color: #212529;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Header & Navbar */
+.navbar {
+    box-shadow: 0 2px 4px rgba(0,0,0,.1);
+}
+
+.navbar-brand .bi {
+    font-size: 1.5rem;
+    vertical-align: middle;
+}
+
+.nav-link {
+    transition: color .2s ease-in-out;
+}
+
+    .nav-link:hover, .nav-link.active {
+        color: #ffc107 !important; /* Bootstrap warning color */
+    }
+
+/* Main Content Area */
+.main-content-header h2 {
+    color: #343a40;
+    font-weight: 300;
+    letter-spacing: -1px;
+}
+
+/* News Card Styling */
+.news-card {
+    border: none;
+    border-radius: 0.5rem;
+    transition: transform .2s ease-in-out, box-shadow .2s ease-in-out;
+    overflow: hidden; /* Important for image zoom effect */
+}
+
+    .news-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, .15) !important;
+    }
+
+    .news-card .card-img-container {
+        overflow: hidden;
+        position: relative;
+        height: 200px;
+    }
+
+    .news-card .card-img-top {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform .3s ease;
+    }
+
+    .news-card:hover .card-img-top {
+        transform: scale(1.05);
+    }
+
+    .news-card .card-body {
+        padding: 1.25rem;
+    }
+
+    .news-card .card-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        line-height: 1.4;
+        color: #212529;
+        /* Limit title to 3 lines */
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .news-card .card-text {
+        font-size: 0.9rem;
+    }
+
+.save-article-btn .bi {
+    transition: color .2s ease, transform .2s ease;
+}
+
+.save-article-btn:hover .bi {
+    color: #dc3545; /* Bootstrap danger color */
+    transform: scale(1.2);
+}
+
+
+/* Footer Styling */
+.footer {
+    font-size: 0.9rem;
+}

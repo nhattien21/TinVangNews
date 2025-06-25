@@ -1,0 +1,206 @@
+﻿@using X.PagedList;
+@using X.PagedList.Mvc.Core;
+@model IPagedList<ArticleViewModel>
+@{
+    ViewData["Title"] = "Trang Tin Tức";
+}
+
+<header class="main-content-header mb-4">
+    <h2 class="border-bottom pb-2">@ViewData["NewsType"]</h2>
+</header>
+
+@if (Model == null || !Model.Any())
+{
+    <div class="alert alert-info" role="alert">
+        <i class="bi bi-info-circle-fill"></i> Không tìm thấy tin tức nào. Vui lòng thử lại sau hoặc với một từ khóa khác.
+    </div>
+}
+else
+{
+    <div class="row">
+        <!-- Main News Column -->
+        <div class="col-lg-8">
+            <!-- Featured Article -->
+            @{
+                var featuredArticle = Model.FirstOrDefault();
+                if (featuredArticle != null)
+                {
+                    <div class="card news-card shadow-sm mb-4">
+                        <div class="row g-0">
+                            <div class="col-md-7">
+                                <a href="@featuredArticle.Url" target="_blank" class="text-decoration-none">
+                                    <div class="card-img-container" style="height: 100%;">
+                                        <img src="@(string.IsNullOrEmpty(featuredArticle.UrlToImage) ? "https://via.placeholder.com/800x500.png?text=Image+Not+Available" : featuredArticle.UrlToImage)" class="card-img-top" alt="Featured News Image">
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-md-5 d-flex flex-column">
+                                <div class="card-body">
+                                    <h3 class="card-title fs-4">
+                                        <a href="@featuredArticle.Url" target="_blank" class="text-decoration-none text-dark">
+                                            @featuredArticle.Title
+                                        </a>
+                                    </h3>
+                                    <p class="card-text text-muted">@featuredArticle.Description</p>
+                                    <p class="card-text"><small class="text-muted">@featuredArticle.PublishedAt.ToString("dd/MM/yyyy HH:mm")</small></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+
+            <!-- Other Articles -->
+            <div class="row row-cols-1 row-cols-md-2 g-4">
+                @foreach (var news in Model.Skip(1)) // Bỏ qua bài đầu tiên đã làm tin nổi bật
+                {
+                    <div class="col d-flex align-items-stretch">
+                        <div class="card news-card h-100 shadow-sm">
+                            <a href="@news.Url" target="_blank">
+                                <div class="card-img-container">
+                                    <img src="@(string.IsNullOrEmpty(news.UrlToImage) ? "https://via.placeholder.com/400x250.png?text=Image+Not+Available" : news.UrlToImage)" class="card-img-top" alt="News Image">
+                                </div>
+                            </a>
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title fs-6">
+                                    <a href="@news.Url" target="_blank" class="text-decoration-none text-dark">
+                                        @news.Title
+                                    </a>
+                                </h5>
+                                <p class="card-text mt-auto pt-2"><small class="text-muted">@news.PublishedAt.ToString("dd/MM/yyyy")</small></p>
+                            </div>
+                            <div class="card-footer bg-transparent border-top-0 d-flex justify-content-end">
+                                @if (User.Identity?.IsAuthenticated ?? false)
+                                {
+                                    <button class="btn btn-sm btn-outline-secondary save-article-btn"
+                                            data-title="@news.Title"
+                                            data-description="@(news.Description ?? "")"
+                                            data-url="@news.Url"
+                                            data-urltoimage="@news.UrlToImage"
+                                            data-publishedat="@news.PublishedAt.ToString("o")"
+                                            title="Lưu vào danh sách yêu thích">
+                                        <i class="bi bi-bookmark-plus"></i>
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <div class="position-sticky" style="top: 2rem;">
+                <div class="p-4 mb-3 bg-white rounded shadow-sm">
+                    <h4 class="fst-italic">Tin mới nhất</h4>
+                    <ol class="list-unstyled mb-0">
+                         @foreach (var news in Model.Take(5)) // Lấy 5 tin đầu tiên
+                         {
+                            <li>
+                                <a href="@news.Url" target="_blank" class="d-flex flex-column flex-lg-row gap-3 align-items-start align-items-lg-center py-3 link-body-emphasis text-decoration-none border-top">
+                                   <img src="@(string.IsNullOrEmpty(news.UrlToImage) ? "https://via.placeholder.com/100x100.png?text=News" : news.UrlToImage)" width="80" height="80" style="object-fit: cover;" class="rounded"/>
+                                   <div class="col-lg-8">
+                                       <h6 class="mb-0">@news.Title</h6>
+                                       <small class="text-muted">@news.PublishedAt.ToShortDateString()</small>
+                                   </div>
+                                </a>
+                            </li>
+                         }
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<div class="d-flex justify-content-center mt-4">
+    @Html.PagedListPager(Model, page => Url.Action("Index",
+            new { page, category = ViewData["CurrentCategory"], query = ViewData["CurrentQuery"] }),
+            new PagedListRenderOptions
+    {
+        LiElementClasses = new string[] { "page-item" },
+        PageClasses = new string[] { "page-link" },
+        DisplayLinkToFirstPage = PagedListDisplayMode.IfNeeded,
+        DisplayLinkToLastPage = PagedListDisplayMode.IfNeeded,
+        DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+        DisplayLinkToNextPage = PagedListDisplayMode.Always,
+        ContainerDivClasses = new string[] { "pagination-container" },
+        UlElementClasses = new string[] { "pagination" }
+    })
+</div>
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+
+            document.body.addEventListener('click', function (e) {
+                const saveButton = e.target.closest('.save-article-btn');
+
+                if (!saveButton) {
+                    return;
+                }
+
+                e.preventDefault();
+
+                const icon = saveButton.querySelector('i');
+
+                saveButton.disabled = true;
+                if (icon) {
+                    icon.classList.remove('bi-bookmark-plus');
+                    icon.classList.add('bi-hourglass-split');
+                }
+
+                const articleData = {
+                    title: saveButton.dataset.title,
+                    description: saveButton.dataset.description,
+                    url: saveButton.dataset.url,
+                    urlToImage: saveButton.dataset.urltoimage,
+                    publishedAt: saveButton.dataset.publishedat
+                };
+                if (!articleData.url) {
+                    console.error('Article URL is missing. Cannot save.');
+                    alert('Lỗi: Không tìm thấy URL của bài viết.');
+                    saveButton.disabled = false; // Kích hoạt lại nút
+                    if (icon) {
+                        icon.classList.remove('bi-hourglass-split');
+                        icon.classList.add('bi-bookmark-x');
+                    }
+                    return;
+                }
+
+                fetch('/Home/AddToFavorites', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(articleData)
+                })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error(`Network response was not ok, status: ${response.status}`);
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data && data.message) {
+                            saveButton.title = data.message; 
+                            if (icon) {
+                                icon.classList.remove('bi-hourglass-split');
+                                icon.classList.add('bi-bookmark-check-fill');
+                                icon.style.color = 'green';
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Lỗi khi lưu bài viết:', error);
+                        alert('Đã xảy ra lỗi khi lưu bài viết. Vui lòng xem console để biết chi tiết.');
+                        saveButton.disabled = false; 
+                        if (icon) {
+                            icon.classList.remove('bi-hourglass-split');
+                            icon.classList.add('bi-bookmark-x');
+                            icon.style.color = 'red'; 
+                        }
+                    });
+            });
+        });
+    </script>
+}

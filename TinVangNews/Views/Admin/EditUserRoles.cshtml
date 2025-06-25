@@ -1,0 +1,44 @@
+﻿@model TinVangNews.ViewModels.Admin.EditUserRolesViewModel
+
+@{
+    ViewData["Title"] = $"Chỉnh sửa vai trò cho {Model.Email}";
+}
+
+<header class="main-content-header mb-4">
+    <h2 class="border-bottom pb-2">@ViewData["Title"]</h2>
+</header>
+
+<div class="row">
+    <div class="col-md-6">
+        <form asp-action="EditUserRoles" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="UserId" />
+
+            <div class="card">
+                <div class="card-header">
+                    Chọn vai trò cho người dùng
+                </div>
+                <div class="card-body">
+                    @for (int i = 0; i < Model.Roles.Count; i++)
+                    {
+                        <div class="form-check m-1">
+                            <input type="hidden" asp-for="Roles[i].RoleName" />
+                            <input type="checkbox" asp-for="Roles[i].IsSelected" class="form-check-input" />
+                            <label class="form-check-label" asp-for="Roles[i].IsSelected">
+                                @Model.Roles[i].RoleName
+                            </label>
+                        </div>
+                    }
+                </div>
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i> Cập nhật vai trò
+                    </button>
+                    <a asp-action="ManageUsers" class="btn btn-secondary">
+                        Hủy
+                    </a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
